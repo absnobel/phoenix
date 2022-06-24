@@ -19,11 +19,11 @@ app.get('/', (request, response) => {
 });
 
 app.get('/auth/discord', async (request, response) => {
-	const origurl = request.query.code;
+	const code = request.query.code;
 	 // Make our POST body
 	 var body = {
-        'client_id': DISCORD_ID,
-        'client_secret': DISCORD_SECRET,
+        'client_id': process.env.DISCORD_ID,
+        'client_secret': process.env.DISCORD_SECRET,
         'grant_type': 'authorization_code',
         'code': code,
         'redirect_uri': 'https://example.com/redirect',
