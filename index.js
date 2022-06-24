@@ -43,7 +43,7 @@ app.get('/auth/discord', async (request, response) => {
 	var discordme = await fetch("https://discord.com/api/oauth2/@me", {
         method: 'GET',
         
-        headers: {'Bearer': accessToken},
+        headers: {'Authorization': `Bearer ${accessToken}`},
     });
 	response = await discordme.json();
 	const username = response.user.username;
