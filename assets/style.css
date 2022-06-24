@@ -1,0 +1,132 @@
+@import url('https://web.archive.org/web/20210902023230cs_/https://fonts.googleapis.com/css2?family=Roboto+Mono&display=swap');
+
+body {
+    background: black;
+    color: rgb(220,220,220);
+    font-family: 'Noto Sans', sans-serif;
+}
+
+.overlay {
+    pointer-events: none;
+    position: fixed;
+    left: 0px;
+    top: 0px;
+    width: 100%;
+    height: 100%;
+    background: black;
+    opacity: 1;
+}
+
+.overlay.hidden {
+    opacity: 0;
+    transition: linear 0.25s;
+}
+
+.center {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+}
+.centerr {
+    position: absolute;
+    left: 50%;
+    top: 40%;
+    transform: translate(-50%, -50%);
+}
+
+.main {
+    text-align: center;
+}
+#scanfcode
+{
+  border-radius:0px;
+  background:#fff;
+  padding:10px;
+  font-size:17px;
+}
+/* logo or main heading */
+#logo
+{
+  font-size:20px;
+  font-weight:bolder;
+  color:#00004d;
+  letter-spacing:2px;
+}
+/* navigation links*/
+#link a
+{
+  color:#01325d;
+  margin:0 20px 0 10px;
+  letter-spacing:1.5px;
+}
+/* navigation link with right border */
+#first-link
+{
+  padding-right:6px;
+  border-right:solid 1px #ccc;
+}
+/* sign up link button and toggle button */
+#button-link ,#toogle-button
+{
+  color:#f2f2f2;
+  border-style: solid;
+  border-width: 1px;
+  border-color: rgba(0,0,0,.2);
+  border-radius: 2px;
+  background-color: #fa6a48;
+  line-height: 17px;
+}
+#button-link a
+{
+  color:#f2f2f2;
+}
+
+.controls{
+    font-color: #f6c1f8;
+    position:absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.controls a {
+    color: #f6c1f8;
+    text-decoration: none;
+}
+
+.modal {
+    position: absolute;
+    width: 500px;
+    top: -500px;
+    min-height: 200px;
+    visibility: hidden;
+    left: 50%;
+
+    border: 1px solid red;
+    background: black;
+
+    transform: translate(-50%, -50%);
+}
+/*
+     FILE ARCHIVED ON 02:32:30 Sep 02, 2021 AND RETRIEVED FROM THE
+     INTERNET ARCHIVE ON 00:33:50 Jun 23, 2022.
+     JAVASCRIPT APPENDED BY WAYBACK MACHINE, COPYRIGHT INTERNET ARCHIVE.
+
+     ALL OTHER CONTENT MAY ALSO BE PROTECTED BY COPYRIGHT (17 U.S.C.
+     SECTION 108(a)(3)).
+*/
+/*
+playback timings (ms):
+  captures_list: 449.7
+  exclusion.robots: 0.123
+  exclusion.robots.policy: 0.113
+  cdx.remote: 0.084
+  esindex: 0.012
+  LoadShardBlock: 78.275 (3)
+  PetaboxLoader3.datanode: 82.9 (5)
+  CDXLines.iter: 17.041 (3)
+  load_resource: 187.253
+  PetaboxLoader3.resolve: 130.396
+  loaddict: 47.285
+*/
