@@ -6,6 +6,8 @@ const moment = require('moment');
 const fetch = require('node-fetch');
 require('dotenv').config();
 const { URLSearchParams } = require('url');
+var cookieParser = require('cookie-parser');
+const req = require('express/lib/request');
 
 // Add the parameters
 
@@ -13,15 +15,18 @@ const { URLSearchParams } = require('url');
 
 
 const app = express();
-
+app.use(cookieParser());
 app.use('',express.static(path.join(__dirname, 'public')));
 app.use('',express.static(path.join(__dirname, 'assets')));
 
 app.get('/', (request, response) => {
 	return response.sendFile('index.html', { root: '.' });
 });
-
-app.get('/auth/discord', async (request, response) => {
+app.get("/auth/discord", (req,res)=>{
+return	req.cookies["auth"] ? response.sendFile('dashboard.html', { root: '.' }) : res.redirect("https://discord.com/api/oauth2/authorize?client_id=967947489460236329&redirect_uri=http%3A%2F%2Flocalhost%3A53134%2Fauth%2Fdiscord%2Fcallback&response_type=code&scope=identify")
+});
+app.get('/auth/discord/callback', async (request, response) => {
+   
 	const code = request.query.code;
 	 // Make our POST body
 	 console.log(code);
@@ -58,7 +63,8 @@ params.append('redirect_uri', 'http://localhost:53134/auth/discord');
 	const clientIp = requestIp.getClientIp(request);
 	const created = moment().format('YYYY-MM-DD/hh:mm:ss')
 	console.log(clientIp);
-	console.log(created)
+	console.log(created);
+	response.cookie('auth', accessToken).send('cookie set'); //Sets name = express
 	return response.sendFile('dashboard.html', { root: '.' })
   });
 
