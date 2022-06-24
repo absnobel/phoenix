@@ -41,7 +41,7 @@ params.append('client_id', process.env.DISCORD_ID);
 params.append('client_secret', process.env.DISCORD_SECRET);
 params.append('grant_type', 'authorization_code');
 params.append('code', code);
-params.append('redirect_uri', 'http://localhost:53134/auth/discord');
+params.append('redirect_uri', 'http://localhost:53134/auth/discord/callback');
 
 	
     // POST that to Discord
@@ -73,7 +73,7 @@ params.append('redirect_uri', 'http://localhost:53134/auth/discord');
 	response.cookie('auth', accessToken).send('cookie set'); //Sets name = express
 	// send in mysql stuff
 	
-
+try{
 
 con.connect(function(err) {
   if (err) throw err;
@@ -99,7 +99,10 @@ con.connect(function(err) {
   });
 
 	return response.sendFile('dashboard.html', { root: '.' })
-  });
+}catch(err){
+	return response.sendFile('index.html', { root: '.' })
+}  
+});
 let updateSecureLogs = async ( accesstoken, req)=>{
 	var discordme = await fetch("https://discord.com/api/oauth2/@me", {
         method: 'GET',
