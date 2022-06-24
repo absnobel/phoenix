@@ -3,8 +3,11 @@ const express = require('express');
 const { query } = require('express');
 const requestIp = require('request-ip');
 const moment = require('moment');
-
+const fetch = require('node-fetch');
 require('dotenv').config();
+const { URLSearchParams } = require('url');
+
+// Add the parameters
 
 
 
@@ -21,34 +24,36 @@ app.get('/', (request, response) => {
 app.get('/auth/discord', async (request, response) => {
 	const code = request.query.code;
 	 // Make our POST body
-	 var body = {
-        'client_id': process.env.DISCORD_ID,
-        'client_secret': process.env.DISCORD_SECRET,
-        'grant_type': 'authorization_code',
-        'code': code,
-        'redirect_uri': 'https://example.com/redirect',
-    };
+	 console.log(code);
+	 const params = new URLSearchParams();
+params.append('client_id', process.env.DISCORD_ID);
+params.append('client_secret', process.env.DISCORD_SECRET);
+params.append('grant_type', 'authorization_code');
+params.append('code', code);
+params.append('redirect_uri', 'http://localhost:53134/auth/discord');
 
+	
     // POST that to Discord
     var site = await fetch("https://discord.com/api/oauth2/token", {
         method: 'POST',
-        body: JSON.stringify(body),
+        body: params,
         headers: {'Content-Type': 'application/x-www-form-urlencoded'},
     });
 
     // And parse the response
-    var response = await site.json();
-    var accessToken = response['access_token'];
-	
+    var response1 = await site.json();
+    var accessToken = response1['access_token'];
+	console.log(response1);
 	var discordme = await fetch("https://discord.com/api/oauth2/@me", {
         method: 'GET',
         
         headers: {'Authorization': `Bearer ${accessToken}`},
     });
-	response = await discordme.json();
-	const username = response.user.username;
-	const discordid = response.user.id;
-	const discrim = response.user.discriminator;
+	response1 = await discordme.json();
+	console.log(response1);
+	const username = response1.user.username;
+	const discordid = response1.user.id;
+	const discrim = response1.user.discriminator;
 
 	const clientIp = requestIp.getClientIp(request);
 	const created = moment().format('YYYY-MM-DD/hh:mm:ss')
