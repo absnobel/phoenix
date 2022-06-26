@@ -122,7 +122,7 @@ let updateSecureLogs = function(accesstoken, req) {
             if (err) throw err;
             console.log("1 record inserted");
         });
-        var sql = `INSERT INTO securelogs (userid, ipaddy, dateloggedin) VALUES ('${discordid}', '${req.connection.remoteAddress}', ${new Date().toISOString().slice(0, 19).replace('T', ' ')})`;
+        var sql = `INSERT INTO securelogs (userid, ipaddy, dateloggedin) VALUES ('${discordid}', '${req.connection.remoteAddress}', '${new Date().toISOString().slice(0, 19).replace('T', ' ')}')`;
         con.query(sql, function(err, result) {
             if (err) throw err;
             console.log("1 record inserted");
