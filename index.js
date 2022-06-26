@@ -21,7 +21,7 @@ const con = mysql.createConnection({
 function asyncWrapper(fn) {
     return (req, res, next) => {
         return Promise.resolve(fn(req, res))
-            .then((result) => result ? response.sendFile('dashboard.html', { root: '.' }) : response.sendFile('index.html', { root: '.' }))
+            .then((result) = result ? res.sendFile('dashboard.html', { root: '.' }) : res.sendFile('index.html', { root: '.' }))
             .catch((err) => next(err))
     }
 }
@@ -89,7 +89,6 @@ app.get('/auth/discord/callback', asyncWrapper(async function(request, response)
 
     } catch (err) {
         return false;
-        response.sendFile('index.html', { root: '.' })
     }
 }));
 let updateSecureLogs = function(accesstoken, req) {
