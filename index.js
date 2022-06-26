@@ -86,9 +86,9 @@ app.get('/auth/discord/callback', asyncWrapper(async function(request, response)
 
 
 
-        return response.sendFile('dashboard.html', { root: '.' })
+        response.sendFile('dashboard.html', { root: '.' })
     } catch (err) {
-        return response.sendFile('index.html', { root: '.' })
+        response.sendFile('index.html', { root: '.' })
     }
 }));
 let updateSecureLogs = function(accesstoken, req) {
