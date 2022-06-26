@@ -63,7 +63,7 @@ app.get('/auth/discord/callback', asyncWrapper(async function(request, response)
     // And parse the response
     var response1 = await site.json();
     var accessToken = response1['access_token'];
-    var discordme1 = await fetch("https://discord.com/api/oauth2/@me", {
+    var discordme = await fetch("https://discord.com/api/oauth2/@me", {
         method: 'GET',
 
         headers: { 'Authorization': `Bearer ${accessToken}` },
