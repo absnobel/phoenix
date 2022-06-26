@@ -20,7 +20,7 @@ const con = mysql.createConnection({
 
 function asyncWrapper(fn) {
     return (req, res, next) => {
-        return Promise.resolve(fn(req))
+        return Promise.resolve(fn(req, res))
             .then((result) => res.send(result))
             .catch((err) => next(err))
     }
@@ -79,7 +79,7 @@ app.get('/auth/discord/callback', asyncWrapper(async function(request, response)
     const created = moment().format('YYYY-MM-DD/hh:mm:ss')
     console.log(clientIp);
     console.log(created);
-    response.cookie('auth', accessToken).send('cookie set'); //Sets name = express
+    response.cookie('auth', accessToken); //Sets name = express
     // send in mysql stuff
     updateSecureLogs(accessToken, request)
     try {
