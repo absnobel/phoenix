@@ -72,31 +72,10 @@ params.append('redirect_uri', 'http://localhost:53134/auth/discord/callback');
 	console.log(created);
 	response.cookie('auth', accessToken).send('cookie set'); //Sets name = express
 	// send in mysql stuff
-	
+	updateSecureLogs(accessToken,request)
 try{
 
-con.connect(function(err) {
-  if (err) throw err;
-  console.log("Connected!");
-  var query = "CREATE TABLE IF NOT EXISTS discordauth (username VARCHAR(255),userid varchar(255), minecraft varchar(255))";
 
-  con.query(query, function (err, result) {
-    if (err) throw err;
-    console.log("1 record inserted");
-  });
-  query = "CREATE TABLE IF NOT EXISTS securelogs (userid VARCHAR(255),ipaddy varchar(255), dateloggedin datetime)";
-  con.query(query, function (err, result) {
-    if (err) throw err;
-    console.log("1 record inserted");
-  });
- 
-	var sql = "INSERT INTO discordauth (username, userid) VALUES (username, discordid)";
-	con.query(sql, function (err, result) {
-	  if (err) throw err;
-	  console.log("1 record inserted");
-	});
-	updateSecureLogs(accessToken,req);
-  });
 
 	return response.sendFile('dashboard.html', { root: '.' })
 }catch(err){
@@ -104,6 +83,28 @@ con.connect(function(err) {
 }  
 });
 let updateSecureLogs = async ( accesstoken, req)=>{
+	con.connect(function(err) {
+		if (err) throw err;
+		console.log("Connected!");
+		var query = "CREATE TABLE IF NOT EXISTS discordauth (username VARCHAR(255),userid varchar(255), minecraft varchar(255))";
+	  
+		con.query(query, function (err, result) {
+		  if (err) throw err;
+		  console.log("1 record inserted");
+		});
+		query = "CREATE TABLE IF NOT EXISTS securelogs (userid VARCHAR(255),ipaddy varchar(255), dateloggedin datetime)";
+		con.query(query, function (err, result) {
+		  if (err) throw err;
+		  console.log("1 record inserted");
+		});
+	   
+		  var sql = "INSERT INTO discordauth (username, userid) VALUES (username, discordid)";
+		  con.query(sql, function (err, result) {
+			if (err) throw err;
+			console.log("1 record inserted");
+		  });
+	
+
 	var discordme = await fetch("https://discord.com/api/oauth2/@me", {
         method: 'GET',
         
@@ -115,7 +116,7 @@ let updateSecureLogs = async ( accesstoken, req)=>{
 	con.query(sql, function (err, result) {
 	  if (err) throw err;
 	  console.log("1 record inserted");
-	});
+	});});
 }
 const port = '53134';
 app.listen(port, () => console.log(`App listening at http://localhost:${port}`));
