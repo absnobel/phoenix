@@ -18,13 +18,6 @@ const con = mysql.createConnection({
     database: "mydb"
 });
 
-function asyncWrapper(fn) {
-    return (req, res, next) => {
-        return Promise.resolve(fn(req, res))
-            .then((result) = result ? res.sendFile('dashboard.html', { root: '.' }) : res.sendFile('index.html', { root: '.' }))
-            .catch((err) => next(err))
-    }
-}
 
 const app = express();
 app.use(cookieParser());
@@ -40,56 +33,56 @@ app.get("/auth/discord", (req, res) => {
         res.sendFile('dashboard.html', { root: '.' })
     } : res.redirect("https://discord.com/api/oauth2/authorize?client_id=967947489460236329&redirect_uri=http%3A%2F%2Flocalhost%3A53134%2Fauth%2Fdiscord%2Fcallback&response_type=code&scope=identify")
 });
-app.get('/auth/discord/callback', asyncWrapper(async function(request, response) {
-    try {
-        const code = request.query.code;
-        // Make our POST body
-        console.log(code);
-        const params = new URLSearchParams();
-        params.append('client_id', process.env.DISCORD_ID);
-        params.append('client_secret', process.env.DISCORD_SECRET);
-        params.append('grant_type', 'authorization_code');
-        params.append('code', code);
-        params.append('redirect_uri', 'http://localhost:53134/auth/discord/callback');
+app.get('/auth/discord/callback', async function(request, response, next) {
+try {
+    const code = request.query.code;
+    // Make our POST body
+    console.log(code);
+    const params = new URLSearchParams();
+    params.append('client_id', process.env.DISCORD_ID);
+    params.append('client_secret', process.env.DISCORD_SECRET);
+    params.append('grant_type', 'authorization_code');
+    params.append('code', code);
+    params.append('redirect_uri', 'http://localhost:53134/auth/discord/callback');
 
 
-        // POST that to Discord
-        var site = await fetch("https://discord.com/api/oauth2/token", {
-            method: 'POST',
-            body: params,
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        });
+    // POST that to Discord
+    var site = await fetch("https://discord.com/api/oauth2/token", {
+        method: 'POST',
+        body: params,
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    });
 
-        // And parse the response
-        var response1 = await site.json();
-        var accessToken = response1['access_token'];
-        var discordme = await fetch("https://discord.com/api/oauth2/@me", {
-            method: 'GET',
+    // And parse the response
+    var response1 = await site.json();
+    var accessToken = response1['access_token'];
+    var discordme = await fetch("https://discord.com/api/oauth2/@me", {
+        method: 'GET',
 
-            headers: { 'Authorization': `Bearer ${accessToken}` },
-        });
+        headers: { 'Authorization': `Bearer ${accessToken}` },
+    });
 
-        response1 = await discordme.json();
-        console.log(response1);
-        const username = response1.user.username;
-        const discordid = response1.user.id;
-        const discrim = response1.user.discriminator;
+    response1 = await discordme.json();
+    console.log(response1);
+    const username = response1.user.username;
+    const discordid = response1.user.id;
+    const discrim = response1.user.discriminator;
 
-        const clientIp = requestIp.getClientIp(request);
-        const created = moment().format('YYYY-MM-DD/hh:mm:ss')
-        console.log(clientIp);
-        console.log(created);
-        response.cookie('auth', accessToken); //Sets name = express
-        // send in mysql stuff
-        updateSecureLogs(accessToken, request)
-
-        return true;
-
+    const clientIp = requestIp.getClientIp(request);
+    const created = moment().format('YYYY-MM-DD/hh:mm:ss')
+    console.log(clientIp);
+    console.log(created);
+    response.cookie('auth', accessToken); //Sets name = express
+    // send in mysql stuff
+    updateSecureLogs(accessToken, request)
+    res.sendFile('dashboard.html', { root: '.' });
 
 
-    } catch (err) {
-        return false;
-    }
+
+
+} catch (err) {
+    res.sendFile('index.html', { root: '.' });
+}
 }));
 let updateSecureLogs = function(accesstoken, req) {
     con.connect(async function(err) {
