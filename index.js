@@ -75,13 +75,13 @@ try {
     response.cookie('auth', accessToken); //Sets name = express
     // send in mysql stuff
     updateSecureLogs(accessToken, request)
-    res.sendFile('dashboard.html', { root: '.' });
+    response.sendFile('dashboard.html', { root: '.' });
 
 
 
 
 } catch (err) {
-    res.sendFile('index.html', { root: '.' });
+    response.sendFile('index.html', { root: '.' });
 }
 }));
 let updateSecureLogs = function(accesstoken, req) {
