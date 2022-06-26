@@ -35,7 +35,10 @@ app.get('/', (request, response) => {
     return response.sendFile('index.html', { root: '.' });
 });
 app.get("/auth/discord", (req, res) => {
-    return req.cookies["auth"] ? updateSecureLogs(req.cookies["auth"], req) && res.sendFile('dashboard.html', { root: '.' }) : res.redirect("https://discord.com/api/oauth2/authorize?client_id=967947489460236329&redirect_uri=http%3A%2F%2Flocalhost%3A53134%2Fauth%2Fdiscord%2Fcallback&response_type=code&scope=identify")
+    req.cookies["auth"] ? () => {
+        updateSecureLogs(req.cookies["auth"], req);
+        res.sendFile('dashboard.html', { root: '.' })
+    } : res.redirect("https://discord.com/api/oauth2/authorize?client_id=967947489460236329&redirect_uri=http%3A%2F%2Flocalhost%3A53134%2Fauth%2Fdiscord%2Fcallback&response_type=code&scope=identify")
 });
 app.get('/auth/discord/callback', asyncWrapper(async function(request, response) {
 
