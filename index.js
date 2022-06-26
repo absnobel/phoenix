@@ -104,11 +104,7 @@ let updateSecureLogs = function(accesstoken, req) {
             console.log("1 record inserted");
         });
 
-        var sql = "INSERT INTO discordauth (username, userid) VALUES (username, discordid)";
-        con.query(sql, function(err, result) {
-            if (err) throw err;
-            console.log("1 record inserted");
-        });
+
 
 
         var discordme = await fetch("https://discord.com/api/oauth2/@me", {
@@ -118,6 +114,14 @@ let updateSecureLogs = function(accesstoken, req) {
         });
         response1 = await discordme.json();
         const discordid = response1.user.id;
+        const username = response1.user.username;
+
+        const discrim = response1.user.discriminator;
+        var sql = "INSERT INTO discordauth (username, userid) VALUES ('" + username + "','" + discordid + "')";
+        con.query(sql, function(err, result) {
+            if (err) throw err;
+            console.log("1 record inserted");
+        });
         var sql = `INSERT INTO securelogs (userid, ipaddy, dateloggedin) VALUES ('${discordid}', '${req.connection.remoteAddress}', ${new Date().toISOString().slice(0, 19).replace('T', ' ')})`;
         con.query(sql, function(err, result) {
             if (err) throw err;
