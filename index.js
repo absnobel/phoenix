@@ -10,6 +10,15 @@ var cookieParser = require('cookie-parser');
 const req = require('express/lib/request');
 const mysql = require('mysql');
 // Add the parameters
+var session = require('express-session')
+var app = express()
+app.set('trust proxy', 1) // trust first proxy
+app.use(session({
+    secret: 'alliisdabest',
+    resave: false,
+    saveUninitialized: true,
+    cookie: {}
+}))
 
 const con = mysql.createConnection({
     host: "127.0.0.1",
@@ -19,7 +28,7 @@ const con = mysql.createConnection({
 });
 
 con.connect();
-const app = express();
+
 app.use(cookieParser());
 app.use('', express.static(path.join(__dirname, 'public')));
 app.use('', express.static(path.join(__dirname, 'assets')));
@@ -30,8 +39,15 @@ app.get('/', (request, response) => {
 app.get("/auth/discord", (req, res) => {
     if (req.cookies["auth"]) {
         updateSecureLogs(req.cookies["auth"], req);
-        res.sendFile('dashboard.html', { root: '.' })
+        req.session.loggedin = true;
+        res.redirect('/dashboard');
     } else res.redirect("https://discord.com/api/oauth2/authorize?client_id=967947489460236329&redirect_uri=http%3A%2F%2Flocalhost%3A53134%2Fauth%2Fdiscord%2Fcallback&response_type=code&scope=identify")
+});
+app.get('/dashboard', (req, res) => {
+    if (req.session.loggedin) {
+        res.sendFile('dashboard.html', { root: '.' });
+    } else
+        res.sendFile('index.html', { root: '.' });
 });
 app.get('/auth/discord/callback', async function(request, response, next) {
     try {
@@ -73,10 +89,11 @@ app.get('/auth/discord/callback', async function(request, response, next) {
         console.log(clientIp);
         console.log(created);
         response.cookie('auth', accessToken); //Sets name = express
+        req.session.loggedin = true;
         // send in mysql stuff
         updateSecureLogs(accessToken, request)
-        response.sendFile('dashboard.html', { root: '.' });
-
+            //        response.sendFile('dashboard.html', { root: '.' });
+        res.redirect('/dashboard');
 
 
 
