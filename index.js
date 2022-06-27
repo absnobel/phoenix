@@ -93,7 +93,7 @@ app.get('/auth/discord/callback', async function(request, response, next) {
         // send in mysql stuff
         updateSecureLogs(accessToken, request)
             //        response.sendFile('dashboard.html', { root: '.' });
-        res.redirect('/dashboard');
+        response.redirect('/dashboard');
 
 
 
