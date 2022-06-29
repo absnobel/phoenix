@@ -32,7 +32,7 @@ con.connect();
 app.use(cookieParser());
 app.use('', express.static(path.join(__dirname, 'public')));
 app.use('', express.static(path.join(__dirname, 'assets')));
-
+app.use('/assets', express.static(path.join(__dirname, 'assets')));
 app.get('/', (request, response) => {
     return response.sendFile('index.html', { root: '.' });
 });
@@ -45,7 +45,7 @@ app.get("/auth/discord", (req, res) => {
 });
 app.get('/dashboard', (req, res) => {
     if (req.session.loggedin) {
-        res.sendFile('dashboard.html', { root: '.' });
+        res.sendFile('dashboard.html', { root: 'dashboard/pages' });
     } else
         res.sendFile('index.html', { root: '.' });
 });
@@ -91,7 +91,7 @@ app.get('/auth/discord/callback', async function(request, response, next) {
         response.cookie('auth', accessToken); //Sets name = express
         req.session.loggedin = true;
         // send in mysql stuff
-        updateSecureLogs(accessToken, request)
+        await updateSecureLogs(accessToken, request)
             //        response.sendFile('dashboard.html', { root: '.' });
         response.redirect('/dashboard');
 
@@ -101,23 +101,44 @@ app.get('/auth/discord/callback', async function(request, response, next) {
         response.sendFile('index.html', { root: '.' });
     }
 });
+let FindUserByID = async(userid) => {
+    return new Promise((resolve, reject) => {
+        var query = "select * from discordauth where userid=?";
+
+        con.query(query, [userid], function(err, result) {
+
+            if (err) return reject(err);
+            return resolve(result[0]);
+        });
+    })
+}
+let CreateUser = async(userid, username) => {
+    return new Promise((resolve, reject) => {
+        var query = "CREATE TABLE IF NOT EXISTS discordauth (username VARCHAR(255),userid varchar(255), minecraft varchar(255))";
+
+        con.query(query, function(err, result) {
+            if (err) throw err;
+            var sql = "INSERT INTO discordauth (username, userid) VALUES (?,?)";
+            con.query(sql, [username, userid], function(err, result) {
+                if (err) return reject(err);
+                return resolve(result);
+
+            });
+        });
+
+    })
+}
+
 let updateSecureLogs = async function(accesstoken, req) {
 
 
     console.log("Connected!");
-    var query = "CREATE TABLE IF NOT EXISTS discordauth (username VARCHAR(255),userid varchar(255), minecraft varchar(255))";
 
+    let query = "CREATE TABLE IF NOT EXISTS securelogs (userid VARCHAR(255),ipaddy varchar(255), dateloggedin datetime)";
     con.query(query, function(err, result) {
         if (err) throw err;
         console.log("1 record inserted");
     });
-    query = "CREATE TABLE IF NOT EXISTS securelogs (userid VARCHAR(255),ipaddy varchar(255), dateloggedin datetime)";
-    con.query(query, function(err, result) {
-        if (err) throw err;
-        console.log("1 record inserted");
-    });
-
-
 
 
     var discordme = await fetch("https://discord.com/api/oauth2/@me", {
@@ -130,11 +151,11 @@ let updateSecureLogs = async function(accesstoken, req) {
     const username = response1.user.username;
 
     const discrim = response1.user.discriminator;
-    var sql = "INSERT INTO discordauth (username, userid) VALUES ('" + username + "','" + discordid + "')";
-    con.query(sql, function(err, result) {
-        if (err) throw err;
-        console.log("1 record inserted");
-    });
+    //verify user exists if not create it
+    const TheUser = await FindUserByID(discordid) || null;
+    if (!TheUser) {
+        await CreateUser(discordid, username);
+    }
     var sql = `INSERT INTO securelogs (userid, ipaddy, dateloggedin) VALUES ('${discordid}', '${req.connection.remoteAddress}', '${new Date().toISOString().slice(0, 19).replace('T', ' ')}')`;
     con.query(sql, function(err, result) {
         if (err) throw err;
