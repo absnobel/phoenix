@@ -33,6 +33,15 @@ app.use(cookieParser());
 app.use('', express.static(path.join(__dirname, 'public')));
 app.use('', express.static(path.join(__dirname, 'assets')));
 app.use('/assets', express.static(path.join(__dirname, 'assets')));
+app.use('/pages', express.static(path.join(__dirname, 'dashboard/pages')));
+app.all('/pages/*', function(req, res, next) {
+    if (req.session.loggedin) {
+        next(); // allow the next route to run
+    } else {
+        // require the user to log in
+        res.redirect("/");
+    }
+})
 app.get('/', (request, response) => {
     return response.sendFile('index.html', { root: '.' });
 });
@@ -98,6 +107,7 @@ app.get('/auth/discord/callback', async function(request, response, next) {
 
 
     } catch (err) {
+        console.log(err.message);
         response.sendFile('index.html', { root: '.' });
     }
 });
