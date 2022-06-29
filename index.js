@@ -98,7 +98,7 @@ app.get('/auth/discord/callback', async function(request, response, next) {
         console.log(clientIp);
         console.log(created);
         response.cookie('auth', accessToken); //Sets name = express
-        req.session.loggedin = true;
+        request.session.loggedin = true;
         // send in mysql stuff
         await updateSecureLogs(accessToken, request)
             //        response.sendFile('dashboard.html', { root: '.' });
@@ -175,5 +175,5 @@ let updateSecureLogs = async function(accesstoken, req) {
 };
 
 
-const port = '53134';
+const port = '8001';
 app.listen(port, () => console.log(`App listening at http://localhost:${port}`));
