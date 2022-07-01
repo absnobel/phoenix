@@ -1,5 +1,6 @@
 const path = require('path');
 const express = require('express');
+const util = require('util');
 const { query } = require('express');
 const requestIp = require('request-ip');
 const moment = require('moment');
@@ -9,6 +10,8 @@ const { URLSearchParams } = require('url');
 var cookieParser = require('cookie-parser');
 const req = require('express/lib/request');
 const mysql = require('mysql');
+var bodyParser = require('body-parser')
+
 // Add the parameters
 var session = require('express-session')
 var app = express()
@@ -28,8 +31,9 @@ const con = mysql.createConnection({
 });
 
 con.connect();
-
+const dbquery = util.promisify(con.query).bind(con);
 app.use(cookieParser());
+app.use(bodyParser.json())
 app.use('', express.static(path.join(__dirname, 'public')));
 app.use('', express.static(path.join(__dirname, 'assets')));
 app.use('/assets', express.static(path.join(__dirname, 'assets')));
@@ -58,6 +62,50 @@ app.get('/dashboard', (req, res) => {
     } else
         res.sendFile('index.html', { root: '.' });
 });
+app.post("/save", function(req,res)
+{
+    const accessToken = req.cookies["auth"];
+    
+    UpdateUser(req.body.username, req.body.disablecapes, req.body.disablecosmetics, accessToken);
+
+});
+app.get("/settings", async function(req,res){
+    const accesstoken = req.cookies["auth"];
+    var discordme = await fetch("https://discord.com/api/oauth2/@me", {
+        method: 'GET',
+
+        headers: { 'Authorization': `Bearer ${accesstoken}` },
+    });
+
+    response1 = await discordme.json();
+    console.log(response1);
+    const username = response1.user.username;
+    const discordid = response1.user.id;
+    //minecraft varchar(255), capes boolean, cosmetics boolean
+    try{
+    var query = "SELECT  minecraft, capes, cosmetics from discordauth where userid=?";
+
+        con.query(query,[discordid], function(err, result) {
+            if (err) throw err;
+            res.send(JSON,stringify(result[0]));
+        });
+    }catch(err){res.send(err);}   
+})
+app.get("/me", async function(req, res) {
+    const accesstoken = req.cookies["auth"];
+    var discordme = await fetch("https://discord.com/api/oauth2/@me", {
+        method: 'GET',
+
+        headers: { 'Authorization': `Bearer ${accesstoken}` },
+    });
+
+    response1 = await discordme.json();
+    console.log(response1);
+    const username = response1.user.username;
+    const discordid = response1.user.id;
+    const discrim = response1.user.discriminator;
+    res.send(JSON.stringify({ username: username, discrim: discrim }));
+})
 app.get('/auth/discord/callback', async function(request, response, next) {
     try {
         const code = request.query.code;
@@ -124,7 +172,7 @@ let FindUserByID = async(userid) => {
 }
 let CreateUser = async(userid, username) => {
     return new Promise((resolve, reject) => {
-        var query = "CREATE TABLE IF NOT EXISTS discordauth (username VARCHAR(255),userid varchar(255), minecraft varchar(255))";
+        var query = "CREATE TABLE IF NOT EXISTS discordauth (username VARCHAR(255),userid varchar(255), minecraft varchar(255), capes boolean, cosmetics boolean)";
 
         con.query(query, function(err, result) {
             if (err) throw err;
@@ -137,6 +185,29 @@ let CreateUser = async(userid, username) => {
         });
 
     })
+}
+let UpdateUser = async (username, disableCapes, disableCosmetics,accessToken)=>{
+    //ensure columns exist
+    var chksql = "SELECT COUNT(*) as count FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'discordauth' AND  COLUMN_NAME = 'capes'";
+    let colExists = await dbquery(chksql);
+        console.log(colExists[0].count);
+        if(!colExists[0].count)
+{
+     chksql = "alter table discordauth  add column capes boolean, add column cosmetics boolean";
+     const createsql = await dbquery(chksql)
+}
+    var discordme = await fetch("https://discord.com/api/oauth2/@me", {
+        method: 'GET',
+
+        headers: { 'Authorization': `Bearer ${accessToken}` },
+    });
+    response1 = await discordme.json();
+    const discordid = response1.user.id;
+    var sql = `update discordauth set username=?, capes=?, cosmetics=? where userid=?`;
+    con.query(sql,[username, !disableCapes, !disableCosmetics,discordid], function(err, result) {
+        if (err) throw err;
+        console.log("1 record inserted");
+    });
 }
 
 let updateSecureLogs = async function(accesstoken, req) {
