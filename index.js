@@ -10,7 +10,10 @@ const { URLSearchParams } = require('url');
 var cookieParser = require('cookie-parser');
 const req = require('express/lib/request');
 const mysql = require('mysql');
-var bodyParser = require('body-parser')
+var bodyParser = require('body-parser');
+const jsdom = require("jsdom");
+
+const minecraftPlayer = require("minecraft-player");
 
 // Add the parameters
 var session = require('express-session')
@@ -90,6 +93,22 @@ app.get("/settings", async function(req,res){
             res.send(JSON,stringify(result[0]));
         });
     }catch(err){res.send(err);}   
+});
+
+app.get("/minecraftimg/:username", async function(req,res){
+    try{
+    const username = req.params.username;
+    const playerss = await fetch(`https://minecraftuuid.com/?search=${username}`)
+    .then(response => response.text())
+  .then(text => {
+    const parser = new jsdom.JSDOM(text);
+    //const htmlDocument = parser.parseFromString(text, "text/html");
+    const section = parser.window.document.querySelector("#Player-Images img");
+    
+    //const  player =await minecraftPlayer(username);
+    res.send(section.src);
+  });
+    }catch(err){res.send("error: "+err.message);}
 })
 app.get("/me", async function(req, res) {
     const accesstoken = req.cookies["auth"];
