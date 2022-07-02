@@ -104,7 +104,16 @@ app.get("/me", async function(req, res) {
     const username = response1.user.username;
     const discordid = response1.user.id;
     const discrim = response1.user.discriminator;
-    res.send(JSON.stringify({ username: username, discrim: discrim }));
+    try{
+        var query = "SELECT  minecraft, capes, cosmetics from discordauth where userid=?";
+    
+            con.query(query,[discordid], function(err, result) {
+                if (err) throw err;
+                res.send(JSON.stringify({ username: username, discrim: discrim, me: result[0] }));
+                
+            });
+        }catch(err){res.send(err);}   
+   
 })
 app.get('/auth/discord/callback', async function(request, response, next) {
     try {

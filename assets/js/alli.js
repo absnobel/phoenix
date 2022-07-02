@@ -9,7 +9,8 @@ function fnsignout(){
 }       
 function setSave(){
     const btnSave = document.getElementById("btnSave");
-    btnSave.className="btn bg-gradient-success w-100 mt-4 mb-0"
+    btnSave.className="btn bg-gradient-success w-100 mt-4 mb-0";
+    btnSave.removeAttribute("disabled");
 }
 function SaveChanges(){
     const txtMCUsername = document.getElementById("txtMCUsername");
@@ -28,7 +29,8 @@ async function LoadEdit() {
 
     //init elements here add username etc...
     const signout = document.querySelector(".liSignout");
-    const me = await fetchme().then(user => `${user.username}#${user.discrim}`);
+    let fulldetails = null;
+    const me = await fetchme().then(user => {fulldetails=user.me; return `${user.username}#${user.discrim}`});
     const signoutBtn = document.querySelector("a.signout");
     signoutBtn.addEventListener("click",fnsignout, false)
     document.querySelector("span.username").innerText = `Welcome ${me}`;
@@ -37,9 +39,13 @@ async function LoadEdit() {
     {
         //init settings page
        const txtMCUsername = document.getElementById("txtMCUsername");
-       const chkDisableCapes = document.getElementById("disableCapes");
+       const mcusername = document.getElementById("mcusername");
+       mcusername.innerText= me;
+       txtMCUsername.innerText=fulldetails.minecraft||"unlinked";
+              const chkDisableCapes = document.getElementById("disableCapes");
        const chkDisableCosmetics = document.getElementById("disableCosmetics");
        const btnSave = document.getElementById("btnSave");
+        btnSave.style.display=fulldetails&&fulldetails.minecraft ? "none":"block";
        txtMCUsername.addEventListener("change",setSave);
        chkDisableCapes.addEventListener("change",setSave);
        chkDisableCosmetics.addEventListener("change",setSave);

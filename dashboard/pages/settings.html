@@ -414,14 +414,15 @@
                             <div class="card card-plain mt-8">
                                 <div class="card-header pb-0 text-left bg-transparent">
                                     <h3 class="font-weight-bolder text-info text-gradient">Welcome back</h3>
-                                    <p class="mb-0">Enter Your Minecraft details</p>
+                                    <p class="mb-0" id="mcusername">Enter Your Minecraft details</p>
                                 </div>
                                 <div class="card-body">
                                     <form role="form">
-                                        <label>Username</label>
+                                        <label>MC Username</label>
                                         <div class="mb-3">
-                                            <input type="text" id="txtMCUsername" class="form-control" placeholder="Username" aria-label="Email" aria-describedby="email-addon" />
-                                        </div>
+                                            <span id="txtMCUsername" ></span>
+                                                <button type="button" id="btnSave" data-bs-toggle="modal" data-bs-target="#dlgUsername"  class="hidden btn bg-gradient-primary w-100 mt-4 mb-0">Click Here To Link</button>
+                                            </div>
                                         <div class="form-check form-switch">
                                             <input class="form-check-input" type="checkbox" id="disableCapes" />
                                             <label class="form-check-label" for="disableCapes">Disable Capes</label>
@@ -430,9 +431,7 @@
                                             <input class="form-check-input" type="checkbox" id="disableCosmetics"/>
                                             <label class="form-check-label" for="disableCapes">Disable Cosmetics</label>
                                         </div>
-                                        <div class="text-center">
-                                            <button type="button" id="btnSave" class="btn bg-gradient-info w-100 mt-4 mb-0">Save Changes</button>
-                                        </div>
+                                       
                                     </form>
                                 </div>
                                 
@@ -470,8 +469,33 @@
                 </div>
             </div>
         </footer>
-    </main>
 
+    </main>
+<div class="modal" tabindex="-1" id="dlgUsername" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">MC Username</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>Put your username in this box and click link!</p>
+        <div>
+        <label>Username</label>
+        <div class="mb-3">
+            <input type="text" id="txtMCUsername" class="form-control" placeholder="Username" aria-label="Email" aria-describedby="email-addon" />
+        </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary">Link MC</button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
     <!-- -------- END FOOTER 3 w/ COMPANY DESCRIPTION WITH LINKS & SOCIAL ICONS & COPYRIGHT ------- -->
     <!--   Core JS Files   -->
     <script src="../assets/js/core/popper.min.js"></script>
