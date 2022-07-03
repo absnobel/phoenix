@@ -37,6 +37,12 @@ function SaveChanges(){
         body: JSON.stringify({username: txtMCUsername.value, disablecapes: chkDisableCapes.checked, disableCosmetics:chkDisableCosmetics.checked})
     });
 }
+async function getmcusername(){
+    let fulldetails = null;
+    const fetchstuff = await fetchme().then(user=>{return user.me});
+    console.log(fetchstuff)
+    return fetchstuff.minecraft;
+}
 async function LoadEdit() {
 
     //init elements here add username etc...

@@ -273,6 +273,56 @@ let updateSecureLogs = async function(accesstoken, req) {
 
 };
 
+app.use('/cosmetics', express.static('cosmetics'))
 
+
+app.get('/users/:username.cfg', async (req, res) => {
+  const { username } = req.params
+
+  let cosmetics;
+
+  if (!cachedUsersCosmetics.has(username))  {
+    const maybeUser = usersStore.find(u => u.username === username);
+
+    if (maybeUser === undefined)
+      return res.sendStatus(404);
+
+  ({ cosmetics } = maybeUser);
+ cachedUsersCosmetics.set(maybeUser.username, cosmetics)
+  } else {
+    cosmetics = cachedUsersCosmetics.get(username);
+  }
+
+  res.json({
+    items: cosmetics.map(cos =>
+      ({
+        type: cos,
+        model: `cosmetics/${cos}/model.cfg`,
+        texture: `cosmetics/${cos}/texture.png`,
+         active: 'true',
+      })
+    )
+  })
+})
+
+app.use('/capes', express.static('capes'))
+app.get('/capes/:username.png', async (req, res) => {
+    const { username } = req.params;
+  
+    const maybeUser = usersStore.find(u => u.username === username);
+
+    if (maybeUser === undefined)
+      return res.sendStatus(404);
+ 
+    res.json({
+        items: capes.map(cos => {
+            return {
+                type: cos,
+                texture: `capes/${maybeUser.username}/texture.png`,
+                active: 'true',
+            }
+        }),
+    });
+});
 const port = '53134';
 app.listen(port, () => console.log(`App listening at http://localhost:${port}`));
