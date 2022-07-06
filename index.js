@@ -12,9 +12,32 @@ const req = require('express/lib/request');
 const mysql = require('mysql');
 var bodyParser = require('body-parser');
 const jsdom = require("jsdom");
+const multer  = require('multer')
+const uploadCapes = multer({ dest: 'capes/',filefilter: function fileFilter (req, file, cb) {
 
+    // The function should call `cb` with a boolean
+    // to indicate if the file should be accepted
+    const dimensions = sizeOf(file.buffer);
+    try{switch(dimensions.width){
+        case 64:
+            case 128:
+                case 32:
+                    case 2048:
+                        cb(null, true);
+                        break;
+                        default:
+                        cb(null,false);
+    }
+}catch{
+    cb(new Error('I don\'t have a clue!'))
+  
+}
+  
+    // You can always pass an error if something goes wrong:
+    
+  } })
 const minecraftPlayer = require("minecraft-player");
-
+const sizeOf = require('image-size');
 // Add the parameters
 var session = require('express-session')
 var app = express()
@@ -40,15 +63,36 @@ app.use(bodyParser.json())
 app.use('', express.static(path.join(__dirname, 'public')));
 app.use('', express.static(path.join(__dirname, 'assets')));
 app.use('/assets', express.static(path.join(__dirname, 'assets')));
-app.use('/pages', express.static(path.join(__dirname, 'dashboard/pages')));
-app.all('/pages/*', function(req, res, next) {
+app.use('/pages', function(req, res, next) {
     if (req.session.loggedin) {
-        next(); // allow the next route to run
+        //check that mc username link exists for user if accessing capes/cosmetics
+        const accesstoken = req.cookies["auth"];
+    fetch("https://discord.com/api/oauth2/@me", {
+        method: 'GET',
+
+        headers: { 'Authorization': `Bearer ${accesstoken}` },
+    }).then(res=>res.json()).then(response1=>
+{
+     const discordid = response1.user.id;
+     try{
+        var query = "SELECT  minecraft, capes, cosmetics from discordauth where userid=?";
+    
+            con.query(query,[discordid], function(err, result) {
+                if (err) throw err;
+                console.log(result[0]);
+                if(result[0].minecraft)
+                next();
+                else
+                res.sendFile('dashboard/pages/settings.html', { root: '.' });
+            });
+        }catch(err){res.send(err);}  
+    }); 
     } else {
         // require the user to log in
         res.redirect("/");
     }
-})
+}, express.static(path.join(__dirname, 'dashboard/pages')));
+
 app.get('/', (request, response) => {
     return response.sendFile('index.html', { root: '.' });
 });
@@ -305,7 +349,12 @@ app.get('/users/:username.cfg', async (req, res) => {
   })
 })
 
-app.use('/capes', express.static('capes'))
+app.use('/capes', express.static('capes'));
+app.post('/capes', uploadCapes.single('fileupload'), function (req, res, next) {
+    // req.file is the `avatar` file
+    // req.body will hold the text fields, if there were any
+   
+  })
 app.get('/capes/:username.png', async (req, res) => {
     const { username } = req.params;
   

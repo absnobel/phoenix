@@ -34,7 +34,7 @@
     <link rel="stylesheet" href="/assets/css/stylesheet.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/94/three.min.js" integrity="sha256-NGC9JEuTWN4GhTj091wctgjzftr+8WNDmw0H8J5YPYE=" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
-
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.0-beta1/css/bootstrap.min.css" integrity="sha512-o/MhoRPVLExxZjCFVBsm17Pkztkzmh7Dp8k7/3JrtNCHh0AQ489kwpfA3dPSHzKDe8YCuEhxXq3Y71eb/o6amg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <script>
    /*!
  * MineRender 1.4.11
@@ -439,11 +439,11 @@
             <div class=" min-vh-75">
                 <div class="container">
                     <div class="row">
-                        <div class="col-xl-2 col-lg-2 col-md-2 d-flex flex-column mx-auto">
+                        <div class="col-xl-3 col-lg-3 col-md-2 d-flex flex-column mx-auto">
                             <div class="card card-plain">
                                 <div class="card-header pb-0 text-left bg-transparent">
                                     <div id="yourskin"></div>
-                                    <h3 class="font-weight-bolder text-info text-gradient">YOU</h3>
+                                    <h3 class="font-weight-bolder text-info text-gradient">Your Current User</h3>
                                      </div>
                                 <div class="card-body">
                                    choose a cape, activate and then drag this coool sprite to see your new cape!
@@ -451,14 +451,36 @@
                                 
                             </div>
                         </div>
-                        <div class="col-xl-8 col-lg-8 col-md-8 d-flex flex-column mx-auto">
+                        <div class="col-xl-7 col-lg-7 col-md-8 d-flex flex-column mx-auto">
                             <div class="card card-plain">
-                                <div class="card-header pb-0 text-left bg-transparent">
-                                    
-                                    <h3 class="font-weight-bolder text-info text-gradient">Gallery // Library</h3>
-                                     </div>
-                                <div class="card-body">
-                                bunch of capes here
+                               <div class="card-body">
+                                    <ul class="nav mb-3 justify-content-center" id="pills-tab" role="tablist">
+                                        <li class="nav-item mx-5" role="presentation">
+                                          <button class="btn btn-primary nav-link active" id="pills-home-tab" data-bs-toggle="pill" data-bs-target="#pills-home"  role="tab" aria-controls="pills-home" aria-selected="true">Gallery</button>
+                                        </li>
+                                        <li class="nav-item" role="presentation">
+                                          <button class="btn btn-primary nav-link" id="pills-profile-tab" data-bs-toggle="pill" data-bs-target="#pills-profile" role="tab" aria-controls="pills-profile" aria-selected="false">Custom</button>
+                                        </li>
+                                      </ul>
+                                      <div class="tab-content" id="pills-tabContent">
+                                        <div class="tab-pane fade show active" id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab">.home..</div>
+                                        <div class="tab-pane fade" id="pills-profile" role="tabpanel" aria-labelledby="pills-profile-tab">
+
+                                            <div class="card card-plain">
+                                                <div class="card-header pb-0 text-left bg-transparent">
+                                                    <span class="font-weight-bolder text-info text-gradient">Custom Cape Image</span>
+                                                    <input id="fileupload" type="file" name="fileupload" />
+                                                     </div>
+                                                <div class="card-body">
+                                                   Choose an image for your cape. Please make sure image is 64px Width x 32px Height dimensions!<br />
+                                                  <span class="h3">>></span> <a href="/capes/sample.png" class="h3" download="sample.png">Download Sample Template</a> <span class="h3"><<</span>
+
+                                                </div>
+                                                
+                                            </div>
+                                        </div>
+                                        </div>
+                                      
                                 </div>
                                 
                             </div>
@@ -557,7 +579,7 @@
             
             skinRender.render({
                 username: mcusername,
-                capeUrl: "/capes/IlyCypher.png",
+                capeUrl: "/capes/sample.png",
                 optifine: false
             });
            

@@ -8,11 +8,9 @@ function fnsignout(){
         location.href = "/";
 }       
 function setSave(){
-    const btnSave = document.getElementById("btnSave");
-    btnSave.className="btn bg-gradient-success w-100 mt-4 mb-0";
-    btnSave.removeAttribute("disabled");
+    SaveChanges();
 }
-async function getmcIMG(){
+function getmcIMG(e){
     const txtMCUsername = document.getElementById("txtUsernamemc");
     const thecontainer = document.querySelector(".mcimg");
     const mcimg = document.getElementById("imgMC"); 
@@ -25,10 +23,16 @@ async function getmcIMG(){
     
 }
 function SaveChanges(){
-    const txtMCUsername = document.getElementById("txtMCUsername");
+    const dlgModal = document.getElementById("dlgUsername");
+   
+    const txtMCUsername = document.getElementById("txtUsernamemc");
     const chkDisableCapes = document.getElementById("disableCapes");
     const chkDisableCosmetics = document.getElementById("disableCosmetics");
-     fetch("/save",{
+   if(dlgModal){
+    const themodal = bootstrap.Modal.getOrCreateInstance(dlgModal); 
+    themodal.hide();
+   }
+    fetch("/save",{
         method: 'POST',
         headers: {
           'Accept': 'application/json',
@@ -63,8 +67,10 @@ async function LoadEdit() {
        txtMCUsername.innerText=fulldetails.minecraft||"unlinked";
               const chkDisableCapes = document.getElementById("disableCapes");
        const chkDisableCosmetics = document.getElementById("disableCosmetics");
+       
        const btnSave = document.getElementById("btnSave");
         btnSave.style.display=fulldetails&&fulldetails.minecraft ? "none":"block";
+
        txtMCUsername.addEventListener("change",setSave);
        txtUsernamemc.addEventListener("keyup", getmcIMG);
        chkDisableCapes.addEventListener("change",setSave);
